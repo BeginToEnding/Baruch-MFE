@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{8250c37c-84ac-4ec8-a4ea-43dee3fb6cfe}</ProjectGuid>
+    <RootNamespace>TradingSystem</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\C++ boost\boost_1_86_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\C++ boost\boost_1_86_0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="base\executionservice.hpp" />
+    <ClInclude Include="base\historicaldataservice.hpp" />
+    <ClInclude Include="base\inquiryservice.hpp" />
+    <ClInclude Include="base\marketdataservice.hpp" />
+    <ClInclude Include="base\positionservice.hpp" />
+    <ClInclude Include="base\pricingservice.hpp" />
+    <ClInclude Include="base\products.hpp" />
+    <ClInclude Include="base\riskservice.hpp" />
+    <ClInclude Include="base\soa.hpp" />
+    <ClInclude Include="base\streamingservice.hpp" />
+    <ClInclude Include="base\tradebookingservice.hpp" />
+    <ClInclude Include="execution\BondAlgoExecutionListener.hpp" />
+    <ClInclude Include="execution\BondAlgoExecutionService.hpp" />
+    <ClInclude Include="execution\BondAlgoExecutionToExecutionListener.hpp" />
+    <ClInclude Include="execution\BondExecutionConnector.hpp" />
+    <ClInclude Include="execution\BondExecutionService.hpp" />
+    <ClInclude Include="execution\BondExecutionToTradeListener.hpp" />
+    <ClInclude Include="gui\GUIService.hpp" />
+    <ClInclude Include="gui\GUIThrottleListener.hpp" />
+    <ClInclude Include="historical\BondHistoricalDataService.hpp" />
+    <ClInclude Include="historical\ExecutionHistoricalConnector.hpp" />
+    <ClInclude Include="historical\ExecutionHistoricalListener.hpp" />
+    <ClInclude Include="historical\InquiryHistoricalConnector.hpp" />
+    <ClInclude Include="historical\InquiryHistoricalListener.hpp" />
+    <ClInclude Include="historical\PositionHistoricalConnector.hpp" />
+    <ClInclude Include="historical\PositionHistoricalListener.hpp" />
+    <ClInclude Include="historical\RiskHistoricalConnector.hpp" />
+    <ClInclude Include="historical\RiskHistoricalListener.hpp" />
+    <ClInclude Include="historical\StreamingHistoricalConnector.hpp" />
+    <ClInclude Include="historical\StreamingHistoricalListener.hpp" />
+    <ClInclude Include="inquiry\BondInquiryConnector.hpp" />
+    <ClInclude Include="inquiry\BondInquiryListener.hpp" />
+    <ClInclude Include="inquiry\BondInquiryService.hpp" />
+    <ClInclude Include="marketdata\BondMarketDataConnector.hpp" />
+    <ClInclude Include="marketdata\BondMarketDataListener.hpp" />
+    <ClInclude Include="marketdata\BondMarketDataService.hpp" />
+    <ClInclude Include="pricing\BondPricingConnector.hpp" />
+    <ClInclude Include="pricing\BondPricingListener.hpp" />
+    <ClInclude Include="pricing\BondPricingService.hpp" />
+    <ClInclude Include="products\TreasuryProducts.hpp" />
+    <ClInclude Include="risk\BondPositionService.hpp" />
+    <ClInclude Include="risk\BondPositionToRiskListener.hpp" />
+    <ClInclude Include="risk\BondRiskService.hpp" />
+    <ClInclude Include="streaming\BondAlgoStreamingListener.hpp" />
+    <ClInclude Include="streaming\BondAlgoStreamingService.hpp" />
+    <ClInclude Include="streaming\BondAlgoStreamingToStreamingListener.hpp" />
+    <ClInclude Include="streaming\BondStreamingConnector.hpp" />
+    <ClInclude Include="streaming\BondStreamingService.hpp" />
+    <ClInclude Include="tradebooking\BondTradeBookingConnector.hpp" />
+    <ClInclude Include="tradebooking\BondTradeBookingListener.hpp" />
+    <ClInclude Include="tradebooking\BondTradeBookingService.hpp" />
+    <ClInclude Include="tradebooking\BondTradeToPositionListener.hpp" />
+    <ClInclude Include="utils\Books.hpp" />
+    <ClInclude Include="utils\PriceUtils.hpp" />
+    <ClInclude Include="utils\ProductLookup.hpp" />
+    <ClInclude Include="utils\TimeUtils.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="execution\BondAlgoExecutionService.cpp" />
+    <ClCompile Include="execution\BondExecutionConnector.cpp" />
+    <ClCompile Include="execution\BondExecutionService.cpp" />
+    <ClCompile Include="gui\GUIService.cpp" />
+    <ClCompile Include="historical\BondHistoricalDataService.cpp" />
+    <ClCompile Include="inquiry\BondInquiryConnector.cpp" />
+    <ClCompile Include="inquiry\BondInquiryService.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="marketdata\BondMarketDataConnector.cpp" />
+    <ClCompile Include="marketdata\BondMarketDataService.cpp" />
+    <ClCompile Include="pricing\BondPricingConnector.cpp" />
+    <ClCompile Include="pricing\BondPricingService.cpp" />
+    <ClCompile Include="products\TreasuryProducts.cpp" />
+    <ClCompile Include="risk\BondPositionService.cpp" />
+    <ClCompile Include="risk\BondRiskService.cpp" />
+    <ClCompile Include="streaming\BondAlgoStreamingService.cpp" />
+    <ClCompile Include="streaming\BondStreamingConnector.cpp" />
+    <ClCompile Include="streaming\BondStreamingService.cpp" />
+    <ClCompile Include="tradebooking\BondTradeBookingConnector.cpp" />
+    <ClCompile Include="tradebooking\BondTradeBookingService.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
