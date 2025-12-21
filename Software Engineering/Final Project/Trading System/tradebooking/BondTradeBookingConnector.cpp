@@ -79,8 +79,8 @@ void BondTradeBookingConnector::Start()
                 TrimCR(line);
                 if (line.empty()) continue;
 
-                // format£ºcusip,side,qty,px,tradeId
-                // ex£º91282CGW5,BUY,1000000,99.125,TRD0001
+                // formatï¼šcusip,side,qty,px,tradeId
+                // exï¼š91282CGW5,BUY,1000000,99.125,TRD0001
                 std::stringstream ss(line);
 
                 std::string cusip, sideStr, qtyStr, pxStr, tradeId;
@@ -102,7 +102,11 @@ void BondTradeBookingConnector::Start()
                 
                 double px = FractionalToDecimal(pxStr);
 
-                Trade<Bond> trade(product, tradeId, px, "TRSY1", qty, side);
+                static int bookIdx = 0;
+                static const char* books[] = { "TRSY1","TRSY2","TRSY3" };
+                std::string book = books[bookIdx++ % 3];
+                Trade<Bond> trade(product, tradeId, px, book, qty, side);
+
             
                 service->BookTrade(trade);
             }
