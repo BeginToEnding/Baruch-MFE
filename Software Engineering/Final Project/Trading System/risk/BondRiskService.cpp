@@ -1,11 +1,17 @@
-// ====================== BondRiskService.cpp ======================
+/**
+ * BondRiskService.cpp
+ * Implementation of BondRiskService.
+ *
+ * @author Hao Wang
+ */
+
 #include "BondRiskService.hpp"
-#include <iostream>
 
 BondRiskService::BondRiskService() = default;
 
 PV01<Bond>& BondRiskService::GetData(string key)
 {
+    // at() throws if the key does not exist; this is acceptable if caller ensures existence.
     return riskMap.at(key);
 }
 
@@ -21,6 +27,7 @@ const vector<ServiceListener<PV01<Bond>>*>& BondRiskService::GetListeners() cons
 
 double BondRiskService::GetPV01Value(const string& cusip) const
 {
+    // Realistic PV01 values for the 7 on-the-run Treasuries.
     static map<string, double> pv01 = {
         {"91282CGW5", 0.018}, // 2Y
         {"91282CGZ8", 0.030}, // 3Y
@@ -30,6 +37,7 @@ double BondRiskService::GetPV01Value(const string& cusip) const
         {"912810TF9", 0.150}, // 20Y
         {"912810TG7", 0.200}  // 30Y
     };
+
     return pv01.at(cusip);
 }
 
@@ -37,27 +45,31 @@ void BondRiskService::AddPosition(Position<Bond>& position)
 {
     const string cusip = position.GetProduct().GetProductId();
 
-    // Aggregate quantity across books.
-    long totalQty = position.GetAggregatePosition();
+    // Aggregate quantity across all books (TRSY1/TRSY2/TRSY3, etc.).
+    // This relies on your Position<T>::GetAggregatePosition() implementation.
+    const long totalQty = position.GetAggregatePosition();
 
     const double pv01 = GetPV01Value(cusip);
 
+    // Create PV01 object for this CUSIP.
     PV01<Bond> pvObj(position.GetProduct(), pv01, totalQty);
 
-    // Avoid operator= in case PV01<Bond> is non-assignable.
+    // Insert/update without using operator= (defensive if PV01 is non-assignable).
     const bool existed = (riskMap.find(cusip) != riskMap.end());
     riskMap.erase(cusip);
-    auto it = riskMap.emplace(cusip, pvObj).first;
+    map<string, PV01<Bond>>::iterator it = riskMap.emplace(cusip, pvObj).first;
     PV01<Bond>& stored = it->second;
 
+    // Recompute bucket risks BEFORE notifying listeners,
+    // so listeners can query up-to-date bucketed PV01.
     ComputeBucketRisk();
 
+    // Notify listeners of add/update.
     for (auto* l : listeners)
     {
         if (!existed) l->ProcessAdd(stored);
         else          l->ProcessUpdate(stored);
     }
-
 }
 
 const PV01<BucketedSector<Bond>>&
@@ -72,13 +84,12 @@ BondRiskService::GetBucketedRiskByName(const string& sectorName) const
     return bucketRiskMap.at(sectorName);
 }
 
-
 void BondRiskService::ComputeBucketRisk()
 {
-    // Build sectors once and reuse. Treasury derives from Bond, so it is usable as Bond.
+    // Build bucket sectors once and reuse them.
+    // ProductLookup::GetBond returns a reference to a stable Treasury/Bond instance.
     static BucketedSector<Bond> front(
-        { ProductLookup::GetBond("91282CGW5"),
-          ProductLookup::GetBond("91282CGZ8") },
+        { ProductLookup::GetBond("91282CGW5"), ProductLookup::GetBond("91282CGZ8") },
         "FrontEnd"
     );
 
@@ -90,17 +101,17 @@ void BondRiskService::ComputeBucketRisk()
     );
 
     static BucketedSector<Bond> longend(
-        { ProductLookup::GetBond("912810TF9"),
-          ProductLookup::GetBond("912810TG7") },
+        { ProductLookup::GetBond("912810TF9"), ProductLookup::GetBond("912810TG7") },
         "LongEnd"
     );
 
     BucketedSector<Bond>* sectors[] = { &front, &belly, &longend };
 
-    for (auto* sec : sectors)
+    for (BucketedSector<Bond>* sec : sectors)
     {
         double totalRisk = 0.0;
 
+        // Sum PV01 * quantity across all products in the sector.
         for (const Bond& b : sec->GetProducts())
         {
             const string pcusip = b.GetProductId();
@@ -114,6 +125,7 @@ void BondRiskService::ComputeBucketRisk()
 
         PV01<BucketedSector<Bond>> bucket(*sec, totalRisk, 1);
 
+        // Update bucketRiskMap entry without relying on assignment.
         const string name = sec->GetName();
         bucketRiskMap.erase(name);
         bucketRiskMap.emplace(name, bucket);

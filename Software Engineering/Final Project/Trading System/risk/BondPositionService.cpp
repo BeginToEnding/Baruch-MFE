@@ -1,11 +1,17 @@
-// ====================== BondPositionService.cpp ======================
+/**
+ * BondPositionService.cpp
+ * Implementation of BondPositionService.
+ *
+ * @author Hao Wang
+ */
+
 #include "BondPositionService.hpp"
-#include <iostream>
 
 BondPositionService::BondPositionService() = default;
 
 Position<Bond>& BondPositionService::GetData(string key)
 {
+    // at() throws if the key does not exist; acceptable if caller ensures existence.
     return positions.at(key);
 }
 
@@ -21,24 +27,24 @@ const vector<ServiceListener< Position<Bond> >*>& BondPositionService::GetListen
 
 void BondPositionService::AddTrade(const Trade<Bond>& trade)
 {
-    string cusip = trade.GetProduct().GetProductId();
-    string book = trade.GetBook();
+    const string cusip = trade.GetProduct().GetProductId();
+    const string book = trade.GetBook();
 
     // Signed quantity: SELL reduces position, BUY increases position.
     long signedQty = trade.GetQuantity();
     if (trade.GetSide() == SELL) signedQty = -signedQty;
 
-    // Insert Position only once; avoid operator= on Position if it is non-assignable.
+    // Insert Position only once; emplace will not overwrite if the key already exists.
     auto res = positions.emplace(cusip, Position<Bond>(trade.GetProduct()));
-    auto it = res.first;
-    bool inserted = res.second;
+    map<string, Position<Bond>>::iterator it = res.first;
+    const bool inserted = res.second;
+
     Position<Bond>& pos = it->second;
 
-    // Update this book.
-    long oldVal = pos.GetPosition(book);
+    // Update the book-level position by delta (positive or negative).
     pos.UpdatePosition(book, signedQty);
 
-    // Notify downstream listeners (e.g., RiskService listener chain).
+    // Notify downstream listeners (e.g., Position -> Risk listener).
     for (auto* l : listeners)
     {
         if (inserted) l->ProcessAdd(pos);
