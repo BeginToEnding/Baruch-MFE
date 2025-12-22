@@ -103,8 +103,8 @@ void BondMarketDataConnector::Start()
 
                 // Choose ONE format and keep consistent between feeder and connector.
                 // Option A (recommended): decimal
-                double mid = std::stod(midStr);
-                double topSpread = std::stod(spreadStr);
+                double mid = FractionalToDecimal(midStr);
+                double topSpread = FractionalToDecimal(spreadStr);
 
                 // Option B: fractional (uncomment if your marketdata.txt uses fractional strings)
                 // double mid = FractionalToDecimal(midStr);
