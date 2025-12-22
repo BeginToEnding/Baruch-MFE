@@ -1,39 +1,64 @@
-// ====================== BondTradeBookingService.hpp ======================
+/**
+ * BondTradeBookingService.hpp
+ * Trade booking service for US Treasury bonds.
+ *
+ * This service receives Trade<Bond> objects from an inbound connector and stores
+ * them in memory keyed by trade id. It notifies downstream listeners (e.g. PositionService)
+ * via the ServiceListener callback chain.
+ *
+ * @author Hao Wang
+ */
 #ifndef BOND_TRADE_BOOKING_SERVICE_HPP
 #define BOND_TRADE_BOOKING_SERVICE_HPP
 
-#include "../products/TreasuryProducts.hpp"
-#include "../utils/ProductLookup.hpp"
-#include "../utils/PriceUtils.hpp"
-#include "../utils/Books.hpp"
 #include "../base/soa.hpp"
+#include "../products/TreasuryProducts.hpp"
 #include "../base/tradebookingservice.hpp"
+
 #include <map>
 #include <vector>
+#include <string>
 
+ /**
+  * BondTradeBookingService
+  * Concrete implementation of TradeBookingService<Bond>.
+  */
 class BondTradeBookingService : public TradeBookingService<Bond>
 {
 public:
     BondTradeBookingService();
 
-    // Get trade memory
-    virtual Trade<Bond>& GetData(string key) override;
+    /**
+     * Get a stored trade by trade id.
+     * Throws std::out_of_range if key not found.
+     */
+    virtual Trade<Bond>& GetData(std::string key) override;
 
-    // Handle new trade pushed by connector
+    /**
+     * Receive a new / updated trade and notify listeners.
+     * This is typically invoked by BookTrade() or by a connector.
+     */
     virtual void OnMessage(Trade<Bond>& data) override;
 
-    // Add listener
+    /**
+     * Register a listener (PositionService listener, historical, etc.).
+     */
     virtual void AddListener(ServiceListener< Trade<Bond> >* listener) override;
 
-    // Return listeners
-    virtual const vector< ServiceListener< Trade<Bond> >* >& GetListeners() const override;
+    /**
+     * Return all registered listeners.
+     */
+    virtual const std::vector< ServiceListener< Trade<Bond> >* >& GetListeners() const override;
 
-    // BookTrade required by base class
+    /**
+     * Book the trade (required by base interface).
+     * This method copies the const input into a mutable Trade and routes through OnMessage().
+     */
     virtual void BookTrade(const Trade<Bond>& trade);
 
 private:
-    map<string, Trade<Bond>> tradeMap;
-    vector<ServiceListener< Trade<Bond> >*> listeners;
+    std::map<std::string, Trade<Bond> > tradeMap;
+    std::vector<ServiceListener< Trade<Bond> >*> listeners;
 };
 
 #endif
