@@ -1,13 +1,20 @@
-// ====================== BondInquiryService.cpp ======================
+/**
+ * BondInquiryService.cpp
+ * Implements BondInquiryService: store inquiries, notify listeners, and publish
+ * quote/reject responses through connector.
+ *
+ * @author Hao Wang
+ */
+
 #include "BondInquiryService.hpp"
 #include <iostream>
-#include <stdexcept>
+
+using namespace std;
 
 BondInquiryService::BondInquiryService()
     : connector(nullptr)
 {
-    // No product lookup initialization needed here.
-    // Inquiry messages carry the Bond product already.
+    // This service is populated by BondInquiryConnector::Start().
 }
 
 Inquiry<Bond>& BondInquiryService::GetData(string key)
@@ -15,17 +22,17 @@ Inquiry<Bond>& BondInquiryService::GetData(string key)
     return inquiries.at(key);
 }
 
-void BondInquiryService::AddListener(ServiceListener<Inquiry<Bond>>* l)
+void BondInquiryService::AddListener(ServiceListener< Inquiry<Bond> >* l)
 {
     listeners.push_back(l);
 }
 
-const vector<ServiceListener<Inquiry<Bond>>*>& BondInquiryService::GetListeners() const
+const vector<ServiceListener< Inquiry<Bond> >*>& BondInquiryService::GetListeners() const
 {
     return listeners;
 }
 
-void BondInquiryService::SetConnector(Connector<Inquiry<Bond>>* c)
+void BondInquiryService::SetConnector(Connector< Inquiry<Bond> >* c)
 {
     connector = c;
 }
@@ -35,12 +42,12 @@ void BondInquiryService::OnMessage(Inquiry<Bond>& data)
     const string id = data.GetInquiryId();
     const bool existed = (inquiries.find(id) != inquiries.end());
 
-    // Store inquiry (avoid operator[] and operator= pitfalls)
+    // Store latest inquiry snapshot.
     inquiries.erase(id);
-    auto it = inquiries.emplace(id, data).first;
+    map<string, Inquiry<Bond> >::iterator it = inquiries.emplace(id, data).first;
     Inquiry<Bond>& stored = it->second;
 
-    // Notify listeners
+    // Notify listeners (e.g., BondInquiryListener auto-quote).
     for (auto* l : listeners)
     {
         if (!existed) l->ProcessAdd(stored);
@@ -52,24 +59,27 @@ void BondInquiryService::SendQuote(const string& inquiryId, double price)
 {
     if (!connector) return;
 
-    auto it = inquiries.find(inquiryId);
+    // Make sure inquiry exists.
+    map<string, Inquiry<Bond> >::iterator it = inquiries.find(inquiryId);
     if (it == inquiries.end())
     {
-        std::cerr << "[InquiryService] SendQuote: inquiryId not found: " << inquiryId << "\n";
+        cerr << "[InquiryService] SendQuote: inquiryId not found: " << inquiryId << "\n";
         return;
     }
 
     Inquiry<Bond>& original = it->second;
 
+    // Create a quoted inquiry object.
     Inquiry<Bond> quoted(
         inquiryId,
         original.GetProduct(),
         original.GetSide(),
         original.GetQuantity(),
-        price,
+        price,                 // decimal internal
         InquiryState::QUOTED
     );
-    
+
+    // Connector expects a non-const ref, so publish a mutable temp.
     Inquiry<Bond> tmp = quoted;
     connector->Publish(tmp);
 }
@@ -78,10 +88,10 @@ void BondInquiryService::RejectInquiry(const string& inquiryId)
 {
     if (!connector) return;
 
-    auto it = inquiries.find(inquiryId);
+    map<string, Inquiry<Bond> >::iterator it = inquiries.find(inquiryId);
     if (it == inquiries.end())
     {
-        std::cerr << "[InquiryService] RejectInquiry: inquiryId not found: " << inquiryId << "\n";
+        cerr << "[InquiryService] RejectInquiry: inquiryId not found: " << inquiryId << "\n";
         return;
     }
 
