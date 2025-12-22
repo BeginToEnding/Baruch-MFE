@@ -1,12 +1,29 @@
-// ====================== BondAlgoExecutionService.cpp ======================
+/**
+ * BondAlgoExecutionService.cpp
+ * Implementation of BondAlgoExecutionService.
+ *
+ * @author Hao Wang
+ */
+
 #include "BondAlgoExecutionService.hpp"
 #include <iostream>
 #include <cmath>
 
+using namespace std;
+
+/**
+ * Compare two doubles with a small tolerance.
+ * Helpful for matching tick-based spreads like 1/128 exactly.
+ */
+static inline bool NearlyEqual(double a, double b, double eps = 1e-12)
+{
+    return std::fabs(a - b) <= eps;
+}
+
 BondAlgoExecutionService::BondAlgoExecutionService()
     : nextBuy(true), orderCounter(1)
 {
-    // This service only reacts to incoming market data (OrderBook<Bond>).
+    // This service reacts only to market data (OrderBook<Bond>).
 }
 
 ExecutionOrder<Bond>& BondAlgoExecutionService::GetData(string key)
@@ -24,20 +41,14 @@ const vector<ServiceListener<ExecutionOrder<Bond>>*>& BondAlgoExecutionService::
     return listeners;
 }
 
-static inline bool NearlyEqual(double a, double b, double eps = 1e-12)
-{
-    return std::fabs(a - b) <= eps;
-}
-
 void BondAlgoExecutionService::ProcessMarketData(const OrderBook<Bond>& ob)
 {
     const Bond& product = ob.GetProduct();
-    const string cusip = product.GetProductId();
 
-    const auto& bidStack = ob.GetBidStack();
-    const auto& askStack = ob.GetOfferStack();
+    const vector<Order>& bidStack = ob.GetBidStack();
+    const vector<Order>& askStack = ob.GetOfferStack();
 
-    // Defensive: ensure there is at least one level on both sides.
+    // Defensive: need at least top-of-book on both sides.
     if (bidStack.empty() || askStack.empty())
         return;
 
@@ -45,26 +56,26 @@ void BondAlgoExecutionService::ProcessMarketData(const OrderBook<Bond>& ob)
     const double bestAsk = askStack.front().GetPrice();
     const double spread = bestAsk - bestBid;
 
-    // Only trade when top-of-book spread is exactly 1/128.
+    // Only trade when top-of-book spread is the tightest (1/128).
     const double minSpread = 1.0 / 128.0;
     if (!NearlyEqual(spread, minSpread))
         return;
 
-    // Determine trade direction (alternating BUY/SELL).
+    // Determine direction: alternate BUY/SELL and cross the spread.
     PricingSide side;
-    double px = 0.0;
-    long qty = 0;
+    double px;
+    long qty;
 
     if (nextBuy)
     {
-        // BUY: cross to the offer
+        // BUY: take the offer (cross to ask).
         side = PricingSide::BID;
         px = bestAsk;
         qty = askStack.front().GetQuantity();
     }
     else
     {
-        // SELL: cross to the bid
+        // SELL: hit the bid (cross to bid).
         side = PricingSide::OFFER;
         px = bestBid;
         qty = bidStack.front().GetQuantity();
@@ -72,7 +83,8 @@ void BondAlgoExecutionService::ProcessMarketData(const OrderBook<Bond>& ob)
 
     nextBuy = !nextBuy;
 
-    const string orderId = "ALGEXEC_" + std::to_string(orderCounter++);
+    // Create unique order id.
+    const string orderId = "ALGEXEC_" + to_string(orderCounter++);
 
     ExecutionOrder<Bond> exec(
         product,
@@ -86,15 +98,15 @@ void BondAlgoExecutionService::ProcessMarketData(const OrderBook<Bond>& ob)
         false   // is child order
     );
 
-    // Store execution order.
-    const bool existed = (algoMap.find(orderId) != algoMap.end());
+    // Store the order (erase+emplace avoids relying on operator=).
     algoMap.erase(orderId);
-    auto it = algoMap.emplace(orderId, exec).first;
-    
+    map<string, ExecutionOrder<Bond>>::iterator it = algoMap.emplace(orderId, exec).first;
+
     ExecutionOrder<Bond>& stored = it->second;
+
+    // Fan-out to listeners (typically algo->execution bridge).
     for (auto* l : listeners)
     {
-        if (!existed) l->ProcessAdd(stored);
-        else          l->ProcessUpdate(stored);
+        l->ProcessAdd(stored);
     }
 }
