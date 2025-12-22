@@ -102,14 +102,9 @@ void BondMarketDataConnector::Start()
                 TrimCR(spreadStr);
 
                 // Choose ONE format and keep consistent between feeder and connector.
-                // Option A (recommended): decimal
                 double mid = FractionalToDecimal(midStr);
                 double topSpread = FractionalToDecimal(spreadStr);
-
-                // Option B: fractional (uncomment if your marketdata.txt uses fractional strings)
-                // double mid = FractionalToDecimal(midStr);
-                // double topSpread = FractionalToDecimal(spreadStr);
-
+                
                 service->BuildAndSendOrderBook(cusip, mid, topSpread);
             }
         }
@@ -119,3 +114,4 @@ void BondMarketDataConnector::Start()
 
     // close(server_fd); // unreachable in typical daemon loop
 }
+
