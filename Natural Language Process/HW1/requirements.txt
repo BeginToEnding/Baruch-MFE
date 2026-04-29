@@ -1,0 +1,11 @@
+pandas
+numpy
+pyyaml
+requests
+yfinance
+scikit-learn
+xgboost
+matplotlib
+pyarrow
+python-dotenv
+openai
