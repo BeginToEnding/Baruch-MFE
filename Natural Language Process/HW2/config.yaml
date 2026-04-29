@@ -1,0 +1,156 @@
+project:
+  random_seed: 42
+  min_sentence_chars: 40
+  recall_floor_substantive: 0.96
+  positive_class_for_thresholding: substantive
+  top_k_for_ensemble: 5
+
+paths:
+  raw_transcripts_dir: data/raw_transcripts
+  interim_dir: data/interim
+  cache_dir: data/cache
+  artifacts_dir: artifacts
+  outputs_dir: outputs
+
+sentence_pool:
+  output_file: all_sentences.parquet
+  deduplicate_lines: true
+  split_on_paragraph_breaks: true
+
+labeling:
+  gold_sample_size: 2500
+  rerun_existing_judges: false
+  keep_inactive_judge_labels: true
+  require_current_audit_signature: true
+  judges:
+    - name: gpt5.4_mini
+      provider: openai
+      model: gpt-5.4-mini
+      enabled: true
+      temperature: 0
+    - name: sonnet4.6
+      provider: anthropic
+      model: claude-sonnet-4-6 # claude-opus-4-7, claude-haiku-4-5-20251001
+      enabled: true
+      temperature: 0
+    - name: qwen3_4b
+      provider: ollama
+      model: qwen3:4b
+      enabled: true
+      batch_size: 4
+      timeout_seconds: 600
+      think: false
+      format: json
+      options:
+        temperature: 0
+        num_ctx: 8192
+  
+  batch_size: 16
+  max_retries: 3
+  sample_audit_fraction: 0.15
+  split_train: 0.6
+  split_val: 0.2
+  split_test: 0.2
+
+features:
+  embedding_provider: ollama
+  sentence_embedding_model: mxbai-embed-large
+  embedding_batch_size: 64
+  normalize_embeddings: true
+  use_embeddings: true
+  use_regex_features: true
+  use_surface_features: true
+
+training:
+  cv_folds: 5
+  threshold_grid_min: 0.01
+  threshold_grid_max: 0.99
+  threshold_grid_points: 99
+  use_grid_search_params: true
+  benchmark_families:
+    - rules_regex
+    - linear_embeddings
+    - tree_enriched
+    - fasttext
+    - finbert
+    - setfit
+    - ensemble
+
+hyperparameter_search:
+  max_combinations_per_family: 81
+  include_families:
+    - rules_regex
+    - linear_embeddings
+    - tree_enriched
+    - fasttext
+  grids:
+    rules_regex: {}
+    linear_embeddings:
+      C: [0.1, 1.0, 10.0]
+    tree_enriched:
+      estimator: [histgbm]
+      histgbm.max_depth: [3, 6]
+      histgbm.learning_rate: [0.05, 0.1]
+      histgbm.max_iter: [200, 300]
+    fasttext:
+      lr: [0.1, 0.25, 0.5]
+      epoch: [25, 50]
+      wordNgrams: [1, 2]
+
+models:
+  rules_regex:
+    label_if_any_pattern_matches: boilerplate
+
+  linear_embeddings:
+    C: 1.0
+    max_iter: 2000
+    class_weight: balanced
+
+  tree_enriched:
+    estimator: histgbm
+    random_forest:
+      n_estimators: 300
+      max_depth: 8
+      min_samples_leaf: 5
+      n_jobs: -1
+      random_state: 42
+    histgbm:
+      max_depth: 6
+      learning_rate: 0.05
+      max_iter: 300
+      random_state: 42
+
+  fasttext:
+    lr: 0.5
+    epoch: 25
+    wordNgrams: 2
+    dim: 100
+    minn: 2
+    maxn: 5
+    loss: softmax
+    thread: 4
+    verbose: 0
+
+  finbert:
+    pretrained_name: ProsusAI/finbert
+    num_train_epochs: 2
+    learning_rate: 2.0e-5
+    batch_size: 16
+    weight_decay: 0.01
+
+  setfit:
+    pretrained_name: sentence-transformers/all-MiniLM-L6-v2
+    batch_size: 16
+    num_iterations: 5
+    num_epochs: 1
+    learning_rate: 2.0e-5
+
+  ensemble:
+    method: weighted_probability
+    include_transformers: true
+
+gui:
+  page_title: BP Classifier
+  page_layout: wide
+  highlight_color: '#ffcccc'
+  plain_color: '#ffffff'
