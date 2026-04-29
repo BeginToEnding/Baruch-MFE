@@ -1,0 +1,26 @@
+[
+  {
+    "name": "gpt5.4_mini",
+    "provider": "openai",
+    "model": "gpt-5.4-mini",
+    "run_id": "gpt5_4_mini",
+    "label_col": "judge_label_gpt5_4_mini",
+    "reason_col": "judge_reason_gpt5_4_mini"
+  },
+  {
+    "name": "sonnet4.6",
+    "provider": "anthropic",
+    "model": "claude-sonnet-4-6",
+    "run_id": "sonnet4_6",
+    "label_col": "judge_label_sonnet4_6",
+    "reason_col": "judge_reason_sonnet4_6"
+  },
+  {
+    "name": "qwen3_4b",
+    "provider": "ollama",
+    "model": "qwen3:4b",
+    "run_id": "qwen3_4b",
+    "label_col": "judge_label_qwen3_4b",
+    "reason_col": "judge_reason_qwen3_4b"
+  }
+]
