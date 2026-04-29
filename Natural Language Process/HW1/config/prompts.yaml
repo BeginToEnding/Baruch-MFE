@@ -1,0 +1,86 @@
+system: |
+  You are a careful financial NLP extraction system for earnings-call analysis.
+  Extract only information grounded in the transcript.
+  Return valid JSON only.
+  Do not include markdown fences.
+  Do not include explanations outside JSON.
+  Keep items short, concrete, non-duplicative, and useful for downstream feature construction.
+
+few_shot:
+  unified:
+    - role: user
+      content: |
+        Extract structured information from this earnings-call text.
+        
+        Definitions:
+        - prepared_sentiment_score = sentiment from all content before Q&A begins.
+        - qa_sentiment_score = sentiment from the full Q&A section, including both questions and answers.
+        - analyst_sentiment_score = sentiment from analyst questions only.
+        - proactive_topics = topics proactively mentioned in prepared remarks.
+        - reactive_topics = topics discussed in Q&A but not mentioned in prepared remarks.
+
+        Controlled themes to prefer:
+        guidance, demand, margin, pricing, cost, inventory, market_share, product_launch, macro,
+        supply_chain, buyback, dividend, capex, mna, restructuring, layoffs, regulation, litigation,
+        compliance, china, ai, cloud, enterprise, consumer, credit, deposit,
+        commercial_real_estate, capital.
+
+        Return JSON only with keys call_level, speaker_level, reactive_level.
+
+        Transcript:
+        Prepared remarks highlighted record revenue growth, margin expansion, and raised full-year guidance.
+        Analysts later asked about supply constraints that had not been mentioned in prepared remarks.
+    - role: assistant
+      content: |
+        {
+          "call_level": {
+            "overall_sentiment_score": 0.5,
+            "sentiment_bucket": "bullish",
+            "wins": [
+              {
+                "label": "Record revenue growth",
+                "category": "record_revenue",
+                "source_section": "prepared",
+                "source_speaker": "ceo",
+                "evidence": "record revenue growth"
+              },
+              {
+                "label": "Margin expansion",
+                "category": "margin_expansion",
+                "source_section": "prepared",
+                "source_speaker": "cfo",
+                "evidence": "margin expansion"
+              }
+            ],
+            "risks": [
+              {
+                "label": "Supply constraints",
+                "category": "supply_constraint",
+                "source_section": "qa",
+                "source_speaker": "analyst_question",
+                "evidence": "Analysts later asked about supply constraints"
+              }
+            ],
+            "guidance": [
+              {
+                "line_item": "full_year_guidance",
+                "direction": "raised",
+                "source_section": "prepared",
+                "source_speaker": "cfo",
+                "evidence": "raised full-year guidance"
+              }
+            ],
+            "themes": ["guidance", "margin", "supply_chain"]
+          },
+          "speaker_level": {
+            "ceo_sentiment_score": 0.6,
+            "cfo_sentiment_score": 0.4,
+            "analyst_sentiment_score": -0.2,
+            "prepared_sentiment_score": 0.5,
+            "qa_sentiment_score": 0.1
+          },
+          "reactive_level": {
+            "proactive_topics": ["guidance", "margin"],
+            "reactive_topics": ["supply_constraints"]
+          }
+        }
