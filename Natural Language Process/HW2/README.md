@@ -31,17 +31,16 @@ bp_classifier_project/
 │  └─ figures/
 ├─ outputs/
 └─ src/
-   └─ bp_classifier/
-       ├─ data.py
-       ├─ rubric.py
-       ├─ labeling.py
-       ├─ features.py
-       ├─ models.py
-       ├─ thresholding.py
-       ├─ evaluate.py
-       ├─ inference.py
-       ├─ gui_app.py
-       └─ utils.py
+    ├─ data.py
+    ├─ rubric.py
+    ├─ labeling.py
+    ├─ features.py
+    ├─ models.py
+    ├─ thresholding.py
+    ├─ evaluate.py
+    ├─ inference.py
+    ├─ gui_app.py
+    └─ utils.py
 ```
 
 ## Install
@@ -189,7 +188,7 @@ If models are already trained and thresholds are set, just select the best model
 
 ```bash
 python main.py --stage from_models   # evaluate → package_best
-streamlit run src/bp_classifier/gui_app.py
+streamlit run src/gui_app.py
 ```
 
 ---
@@ -209,7 +208,7 @@ jupyter notebook walkthrough.ipynb
 ## GUI
 
 ```bash
-streamlit run src/bp_classifier/gui_app.py
+streamlit run src/gui_app.py
 ```
 
 Upload a `.txt` transcript or paste text, then click **Run**. Boilerplate sentences are highlighted in red; hover any sentence to see its predicted probability.

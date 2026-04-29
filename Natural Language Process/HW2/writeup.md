@@ -48,7 +48,7 @@ The positive probability used by all models is `p(boilerplate)`. Thresholding pr
 
 ### Rubric and Prompt Design
 
-The judge prompt is built from a single rubric in `src/bp_classifier/rubric.py`. The rubric defines both classes, provides anchor examples, and includes explicit edge-case rules:
+The judge prompt is built from a single rubric in `src/rubric.py`. The rubric defines both classes, provides anchor examples, and includes explicit edge-case rules:
 
 - Analyst or speaker introductions are boilerplate.
 - Generic thanks and turn-taking language are boilerplate.
@@ -317,7 +317,7 @@ Per-family error CSV files are saved to `outputs/error_analysis/error_analysis_<
 The GUI is implemented in Streamlit and launched with:
 
 ```powershell
-streamlit run src/bp_classifier/gui_app.py
+streamlit run src/gui_app.py
 ```
 
 **Features:**
@@ -371,7 +371,7 @@ python main.py --stage tune_thresholds --family ensemble
 python main.py --stage train_all
 python main.py --stage evaluate
 python main.py --stage package_best
-streamlit run src/bp_classifier/gui_app.py
+streamlit run src/gui_app.py
 ```
 
 If trained models and thresholds already exist, the final evaluation and packaging can be reproduced with:
