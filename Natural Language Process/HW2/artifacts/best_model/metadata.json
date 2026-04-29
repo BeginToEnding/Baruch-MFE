@@ -1,0 +1,24 @@
+{
+  "family": "ensemble",
+  "threshold": 0.35000000000000003,
+  "ensemble": {
+    "method": "weighted_probability",
+    "weight_metric": "pooled_oof_macro_f1",
+    "include_transformers": true,
+    "topk_members": [
+      "setfit",
+      "finbert",
+      "tree_enriched",
+      "linear_embeddings",
+      "fasttext"
+    ],
+    "weights": {
+      "setfit": 0.9357659678921602,
+      "finbert": 0.9273376515528982,
+      "tree_enriched": 0.913301859281036,
+      "linear_embeddings": 0.9087841489342428,
+      "fasttext": 0.8948823066411307
+    },
+    "threshold": 0.33
+  }
+}
